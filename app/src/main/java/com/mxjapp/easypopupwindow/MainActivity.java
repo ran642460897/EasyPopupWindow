@@ -1,12 +1,12 @@
 package com.mxjapp.easypopupwindow;
 
-import android.graphics.drawable.PaintDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.PopupWindow;
+import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.mxjapp.popupwindow.EasyPopupWindow;
 
 public class MainActivity extends AppCompatActivity {
     private EasyPopupWindow popupWindow;
@@ -22,10 +22,11 @@ public class MainActivity extends AppCompatActivity {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                popupWindow.showAsDropDown(textView);
+                popupWindow.show();
             }
         });
-        View view=getLayoutInflater().inflate(R.layout.popup_test,null);
+        View view=getLayoutInflater().inflate(R.layout.popup_test,(ViewGroup) textView.getParent(),false);
         popupWindow=new EasyPopupWindow(view,textView);
+        popupWindow.setOutsideTouchable(true);
     }
 }
