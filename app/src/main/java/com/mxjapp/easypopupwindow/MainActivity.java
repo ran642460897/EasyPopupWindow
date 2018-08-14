@@ -25,8 +25,7 @@ public class MainActivity extends AppCompatActivity {
                 popupWindow.show();
             }
         });
-        View view=getLayoutInflater().inflate(R.layout.popup_test,(ViewGroup) textView.getParent(),false);
-        popupWindow=new EasyPopupWindow(view,textView);
+        popupWindow=new EasyPopupWindow(R.layout.popup_test,textView);
         popupWindow.setOutsideTouchable(true);
     }
 }

@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
@@ -28,6 +30,12 @@ public class EasyPopupWindow extends PopupWindow{
         initWindowManager(view.getContext());
         initView(view);
     }
+    public EasyPopupWindow(int resId,View bindView){
+        if(bindView==null) return;
+        this.bindView=bindView;
+        initWindowManager(bindView.getContext());
+        initView(LayoutInflater.from(bindView.getContext()).inflate(resId,(ViewGroup) bindView.getParent(),false));
+    }
     private void initView(View view){
         setContentView(view);
         view.measure(0, 0);
@@ -40,6 +48,7 @@ public class EasyPopupWindow extends PopupWindow{
                 if(onDismissListener!=null) onDismissListener.onDismiss();
             }
         });
+        setOutsideTouchable(true);
     }
     private void initWindowManager(Context context){
         windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
