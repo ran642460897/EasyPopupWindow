@@ -30,9 +30,9 @@ public class EasyPopupWindow extends PopupWindow{
     }
     private void initView(View view){
         setContentView(view);
-        view.measure(0,0);
+        view.measure(0, 0);
         setHeight(view.getMeasuredHeight());
-        setWidth(view.getMeasuredWidth());
+        setWidth(point.x);
         setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
