@@ -26,6 +26,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         popupWindow=new EasyPopupWindow(R.layout.popup_test,textView);
-        popupWindow.setOutsideTouchable(true);
+        popupWindow.setExtendDarkHeight(true);
     }
 }

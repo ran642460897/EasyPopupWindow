@@ -22,6 +22,7 @@ public class EasyPopupWindow extends PopupWindow{
     private WindowManager windowManager;
     private Point point=new Point();
     private OnDismissListener onDismissListener;
+    private  boolean extendDarkHeight=false;
     private int backgroundColor=Color.parseColor("#a0000000");
 
     public EasyPopupWindow(View view, View bindView) {
@@ -61,12 +62,17 @@ public class EasyPopupWindow extends PopupWindow{
             darkView = new View(bindView.getContext());
             darkView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             darkView.setBackgroundColor(backgroundColor);
+            int contentHeight=0;
+            if(!extendDarkHeight) {
+                getContentView().measure(0, 0);
+                contentHeight=getContentView().getMeasuredHeight();
+            }
             int[] location = new int[2];
             bindView.getLocationInWindow(location);
             WindowManager.LayoutParams p = new WindowManager.LayoutParams();
             p.gravity = Gravity.START | Gravity.BOTTOM;
             p.width = WindowManager.LayoutParams.MATCH_PARENT;
-            p.height = point.y - location[1] - bindView.getMeasuredHeight() - getHeight();
+            p.height = point.y - location[1] - bindView.getMeasuredHeight() - contentHeight;
             p.format = PixelFormat.TRANSLUCENT;
             p.type = WindowManager.LayoutParams.LAST_SUB_WINDOW;
             p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED;
@@ -77,6 +83,10 @@ public class EasyPopupWindow extends PopupWindow{
     public void show(){
         showAsDropDown(bindView);
         showDarkView();
+    }
+
+    public void setExtendDarkHeight(boolean extendDarkHeight) {
+        this.extendDarkHeight = extendDarkHeight;
     }
 
     public void setOnDismissListener(OnDismissListener onDismissListener) {
