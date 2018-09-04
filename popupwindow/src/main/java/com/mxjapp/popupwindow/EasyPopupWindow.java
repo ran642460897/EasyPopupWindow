@@ -1,9 +1,12 @@
 package com.mxjapp.popupwindow;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +20,11 @@ import android.widget.PopupWindow;
  * date: 2018/8/10.
  */
 public class EasyPopupWindow extends PopupWindow{
+    private Context context;
     private View darkView;
     private View bindView;
     private WindowManager windowManager;
-    private Point point=new Point();
+    private DisplayMetrics point=new DisplayMetrics();
     private OnDismissListener onDismissListener;
     private  boolean extendDarkHeight=false;
     private int backgroundColor=Color.parseColor("#a0000000");
@@ -28,14 +32,16 @@ public class EasyPopupWindow extends PopupWindow{
     public EasyPopupWindow(View view, View bindView) {
         if(view==null||bindView==null) return;
         this.bindView = bindView;
-        initWindowManager(view.getContext());
+        this.context=view.getContext();
+        initWindowManager(context);
         initView(view);
     }
     public EasyPopupWindow(int resId,View bindView){
         if(bindView==null) return;
         this.bindView=bindView;
-        initWindowManager(bindView.getContext());
-        initView(LayoutInflater.from(bindView.getContext()).inflate(resId,(ViewGroup) bindView.getParent(),false));
+        this.context=bindView.getContext();
+        initWindowManager(context);
+        initView(LayoutInflater.from(context).inflate(resId,(ViewGroup) bindView.getParent(),false));
     }
     private void initView(View view){
         setContentView(view);
@@ -52,7 +58,7 @@ public class EasyPopupWindow extends PopupWindow{
     }
     private void initWindowManager(Context context){
         windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if(windowManager!=null) windowManager.getDefaultDisplay().getSize(point);
+        if(windowManager!=null) windowManager.getDefaultDisplay().getRealMetrics(point);
     }
     private void hideDarkView(){
         if(darkView!=null) darkView.setVisibility(View.GONE);
@@ -60,7 +66,6 @@ public class EasyPopupWindow extends PopupWindow{
     private void showDarkView(){
         if(darkView==null) {
             darkView = new View(bindView.getContext());
-            darkView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             darkView.setBackgroundColor(backgroundColor);
             int contentHeight=0;
             if(!extendDarkHeight) {
@@ -68,14 +73,14 @@ public class EasyPopupWindow extends PopupWindow{
                 contentHeight=getContentView().getMeasuredHeight();
             }
             int[] location = new int[2];
-            bindView.getLocationInWindow(location);
+            bindView.getLocationOnScreen(location);
             WindowManager.LayoutParams p = new WindowManager.LayoutParams();
-            p.gravity = Gravity.START | Gravity.BOTTOM;
             p.width = WindowManager.LayoutParams.MATCH_PARENT;
-            p.height = point.y - location[1] - bindView.getMeasuredHeight() - contentHeight;
+            p.height = point.heightPixels - location[1] - bindView.getMeasuredHeight() - contentHeight;
             p.format = PixelFormat.TRANSLUCENT;
             p.type = WindowManager.LayoutParams.LAST_SUB_WINDOW;
             p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED;
+            p.verticalMargin=1;
             windowManager.addView(darkView, p);
         }
         darkView.setVisibility(View.VISIBLE);
@@ -85,6 +90,13 @@ public class EasyPopupWindow extends PopupWindow{
         showDarkView();
     }
 
+//    private int getNavHeight(Context context) {
+//        int rid = context.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+//        if (rid!=0){
+//            int resourceId = context.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+//            return context.getResources().getDimensionPixelSize(resourceId);
+//        }else return 0;
+//    }
     public void setExtendDarkHeight(boolean extendDarkHeight) {
         this.extendDarkHeight = extendDarkHeight;
     }

@@ -1,5 +1,7 @@
 package com.mxjapp.easypopupwindow;
 
+import android.graphics.Color;
+import android.graphics.drawable.PaintDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         popupWindow=new EasyPopupWindow(R.layout.popup_test,textView);
-        popupWindow.setExtendDarkHeight(true);
+        popupWindow.setExtendDarkHeight(false);
+        popupWindow.setBackgroundColor(Color.RED);
+        popupWindow.setBackgroundDrawable(new PaintDrawable());
     }
 }
