@@ -24,6 +24,7 @@ public class EasyPopupWindow extends PopupWindow{
     private View darkView;
     private View bindView;
     private WindowManager windowManager;
+    private WindowManager.LayoutParams p;
     private DisplayMetrics point=new DisplayMetrics();
     private OnDismissListener onDismissListener;
     private  boolean extendDarkHeight=false;
@@ -56,34 +57,39 @@ public class EasyPopupWindow extends PopupWindow{
         });
         setOutsideTouchable(true);
     }
+    private void initDarkView(){
+        darkView = new View(context);
+        darkView.setBackgroundColor(backgroundColor);
+        initDarkViewParams();
+    }
+    private void initDarkViewParams(){
+        int contentHeight=0;
+        if(!extendDarkHeight) {
+            getContentView().measure(0, 0);
+            contentHeight=getContentView().getMeasuredHeight();
+        }
+        int[] location = new int[2];
+        bindView.getLocationOnScreen(location);
+        p=new WindowManager.LayoutParams();
+        p.width = WindowManager.LayoutParams.MATCH_PARENT;
+        p.height = point.heightPixels - location[1] - bindView.getMeasuredHeight() - contentHeight;
+        p.format = PixelFormat.TRANSLUCENT;
+        p.type = WindowManager.LayoutParams.LAST_SUB_WINDOW;
+        p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED;
+        p.verticalMargin=1;
+    }
     private void initWindowManager(Context context){
         windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         if(windowManager!=null) windowManager.getDefaultDisplay().getRealMetrics(point);
     }
     private void hideDarkView(){
-        if(darkView!=null) darkView.setVisibility(View.GONE);
+        if(darkView!=null) {
+            windowManager.removeViewImmediate(darkView);
+        }
     }
     private void showDarkView(){
-        if(darkView==null) {
-            darkView = new View(bindView.getContext());
-            darkView.setBackgroundColor(backgroundColor);
-            int contentHeight=0;
-            if(!extendDarkHeight) {
-                getContentView().measure(0, 0);
-                contentHeight=getContentView().getMeasuredHeight();
-            }
-            int[] location = new int[2];
-            bindView.getLocationOnScreen(location);
-            WindowManager.LayoutParams p = new WindowManager.LayoutParams();
-            p.width = WindowManager.LayoutParams.MATCH_PARENT;
-            p.height = point.heightPixels - location[1] - bindView.getMeasuredHeight() - contentHeight;
-            p.format = PixelFormat.TRANSLUCENT;
-            p.type = WindowManager.LayoutParams.LAST_SUB_WINDOW;
-            p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED;
-            p.verticalMargin=1;
-            windowManager.addView(darkView, p);
-        }
-        darkView.setVisibility(View.VISIBLE);
+        if(darkView==null) initDarkView();
+        windowManager.addView(darkView, p);
     }
     public void show(){
         showAsDropDown(bindView);
@@ -99,6 +105,7 @@ public class EasyPopupWindow extends PopupWindow{
 //    }
     public void setExtendDarkHeight(boolean extendDarkHeight) {
         this.extendDarkHeight = extendDarkHeight;
+        if(p!=null) initDarkViewParams();
     }
 
     public void setOnDismissListener(OnDismissListener onDismissListener) {
@@ -107,6 +114,7 @@ public class EasyPopupWindow extends PopupWindow{
 
     public void setBackgroundColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
+        if(darkView!=null) darkView.setBackgroundColor(backgroundColor);
     }
 
     public interface OnDismissListener{
